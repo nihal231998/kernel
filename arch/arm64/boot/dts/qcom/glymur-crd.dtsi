@@ -579,9 +579,6 @@
 };
 
 &camss {
-	vdd-csiphy-0p8-supply = <&vreg_l1f_e1_0p82>;
-	vdd-csiphy-1p2-supply = <&vreg_l4f_e1_1p08>;
-
 	status = "okay";
 
 	ports {
@@ -595,7 +592,7 @@
 		port@2 {
 			reg = <2>;
 
-			csiphy4_ep: endpoint {
+			camss_csiphy4_inep0: endpoint@0 {
 				data-lanes = <0 1 2 3>;
 				remote-endpoint = <&ov08x40_ep>;
 			};
@@ -611,9 +608,6 @@
 };
 
 &cci1_i2c1 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-
 	camera@36 {
 		compatible = "ovti,ov08x40";
 		reg = <0x36>;
@@ -633,10 +627,17 @@
 			ov08x40_ep: endpoint {
 				data-lanes = <1 2 3 4>;
 				link-frequencies = /bits/ 64 <400000000>;
-				remote-endpoint = <&csiphy4_ep>;
+				remote-endpoint = <&camss_csiphy4_inep0>;
 			};
 		};
 	};
+};
+
+&csiphy4 {
+	vdd-csiphy-0p8-supply = <&vreg_l1f_e1_0p82>;
+	vdd-csiphy-1p2-supply = <&vreg_l4f_e1_1p08>;
+
+	status = "okay";
 };
 
 &lpass_vamacro {
