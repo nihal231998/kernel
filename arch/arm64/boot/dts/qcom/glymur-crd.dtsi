@@ -594,12 +594,16 @@
 	status = "okay";
 };
 
+&camss_csiphy0_inep {
+	data-lanes = <1>;
+};
+
 &camss_csiphy4_inep {
 	data-lanes = <1 2 3 4>;
 };
 
 &cci1 {
-	pinctrl-0 = <&cci1_1_default>;
+	pinctrl-0 = <&cci1_1_default>, <&cam_mclk4_default>;
 	pinctrl-1 = <&cci1_1_sleep>;
 
 	status = "okay";
@@ -611,7 +615,7 @@
 		reg = <0x36>;
 
 		reset-gpios = <&tlmm 239 GPIO_ACTIVE_LOW>;
-		pinctrl-0 = <&cam_mclk4_default &cam_reset4_default>;
+		pinctrl-0 = <&cam_reset4_default>;
 		pinctrl-names = "default";
 
 		clocks = <&camcc CAM_CC_MCLK4_CLK>;
@@ -630,6 +634,38 @@
 			};
 		};
 	};
+
+	camera@60 {
+		compatible = "ovti,og0va1b";
+		reg = <0x60>;
+
+		reset-gpios = <&tlmm 109 GPIO_ACTIVE_LOW>;
+		pinctrl-0 = <&cam_reset4_og0va1b>;
+		pinctrl-names = "default";
+
+		clocks = <&camcc CAM_CC_MCLK4_CLK>;
+		assigned-clocks = <&camcc CAM_CC_MCLK4_CLK>;
+		assigned-clock-rates = <19200000>;
+
+		avdd-supply = <&vreg_l3p>;
+		dovdd-supply = <&vreg_l4p>;
+		dvdd-supply = <&vreg_l4p>;
+
+		port {
+			og0va1b_out_ep: endpoint {
+				data-lanes = <1>;
+				link-frequencies = /bits/ 64 <480000000>;
+				remote-endpoint = <&csiphy0_in_ep>;
+			};
+		};
+	};
+};
+
+&csiphy0 {
+	vdda-0p9-supply = <&vreg_l1f_e1_0p82>;
+	vdda-1p2-supply = <&vreg_l4f_e1_1p08>;
+
+	status = "okay";
 };
 
 &csiphy4 {
@@ -637,6 +673,13 @@
 	vdda-1p2-supply = <&vreg_l4f_e1_1p08>;
 
 	status = "okay";
+};
+
+&csiphy0_in_ep {
+	bus-type = <MEDIA_BUS_TYPE_CSI2_DPHY>;
+	clock-lanes = <0>;
+	data-lanes = <1>;
+	remote-endpoint = <&og0va1b_out_ep>;
 };
 
 &csiphy4_in_ep {
@@ -1134,6 +1177,13 @@
 	kybd_default: kybd-default-state {
 		pins = "gpio67";
 		function = "gpio";
+		bias-disable;
+	};
+
+	cam_reset4_og0va1b: cam-reset-og0va1b-state {
+		pins = "gpio109";
+		function = "gpio";
+		drive-strength = <2>;
 		bias-disable;
 	};
 
